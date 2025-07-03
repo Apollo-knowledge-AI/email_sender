@@ -210,7 +210,7 @@ class EmailTemplateGenerator:
                 <div class="sig-contact">
                     📧 {email_remetente}<br>
                     📱 (11) 95101-7666<br>
-                    🌐 www.apolloai.com.br
+                    🌐 https://apolloai.com.br
                 </div>
             </div>
         </div>
