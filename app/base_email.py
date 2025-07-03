@@ -1,13 +1,24 @@
 # email_templates.py
 from datetime import datetime
+import base64
+import os
 
 class EmailTemplateGenerator:
     def __init__(self):
-        # SVG do logo Apollo
-        self.logo_image = 'image/logomarca.png'
-        
-        # SVG do ícone para assinatura
-        self.icon_image = 'image/icon.png'
+        # Gerar tags <img> com imagens em base64
+        self.logo_image = self.get_image_tag('image/logomarca.png', 'Logo Apollo', 100)
+        self.icon_image = self.get_image_tag('image/icon.png', 'Ícone Assinatura', 60)
+
+    def get_image_tag(self, image_path, alt="", max_height=60):
+        """Retorna uma tag <img> com a imagem em base64 embutida, usando caminho absoluto"""
+        try:
+            abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', image_path))
+            with open(abs_path, "rb") as img_file:
+                b64_data = base64.b64encode(img_file.read()).decode("utf-8")
+                print(b64_data[:200])
+            return f'<img src="data:image/png;base64,{b64_data}" alt="{alt}" style="max-height:{max_height}px;">'
+        except Exception as e:
+            return f'<span style="color:red">[Erro ao carregar imagem: {alt}]</span>'
 
     def get_base_template(self):
         """Template HTML base responsivo"""
@@ -17,35 +28,178 @@ class EmailTemplateGenerator:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }}
-        .container {{ max-width: 600px; margin: 0 auto; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }}
-        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; }}
-        .header h1 {{ color: white; margin: 15px 0 0 0; font-size: 24px; font-weight: 300; }}
-        .content {{ padding: 40px 35px; line-height: 1.7; color: #333; }}
-        .greeting {{ font-size: 18px; font-weight: 600; color: #2c3e50; margin-bottom: 25px; }}
-        .highlight {{ background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 25px; border-radius: 12px; margin: 30px 0; text-align: center; }}
-        .features {{ background: #f8f9fa; border-left: 4px solid #FDAB3D; padding: 25px; margin: 25px 0; border-radius: 0 8px 8px 0; }}
-        .cta {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; margin: 30px 0; border-radius: 12px; }}
-        .quote {{ font-style: italic; text-align: center; color: #6c757d; padding: 20px; margin: 25px 0; border-top: 2px solid #e9ecef; }}
-        .signature {{ border-top: 3px solid #FDAB3D; padding: 30px 35px; background: #f8f9fa; display: flex; align-items: center; gap: 20px; }}
-        .sig-name {{ font-size: 18px; font-weight: 600; color: #2c3e50; }}
-        .sig-contact {{ font-size: 13px; color: #495057; line-height: 1.5; }}
-        .footer {{ background: #2c3e50; color: white; text-align: center; padding: 20px; font-size: 12px; }}
-        @media (max-width: 600px) {{ .content, .signature {{ padding: 25px 20px !important; }} .signature {{ flex-direction: column; text-align: center; }} }}
+        body {{ 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            color: #333333;
+        }}
+        
+        .container {{ 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            overflow: hidden;
+        }}
+        
+        .header {{ 
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }}
+        
+        .header::before {{
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #F9A826 0%, #EC9A21 50%, #D98C1E 100%);
+        }}
+        
+
+        
+        .header h1 {{ 
+            color: white; 
+            margin: 15px 0 0 0; 
+            font-size: 28px; 
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }}
+        
+        .content {{ 
+            padding: 40px 35px; 
+            line-height: 1.7; 
+            color: #333333;
+            background: #ffffff;
+        }}
+        
+        .greeting {{ 
+            font-size: 20px; 
+            font-weight: 600; 
+            color: #1a1a1a; 
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #F9A826 0%, #EC9A21 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }}
+        
+        .quote {{ 
+            font-style: italic; 
+            text-align: center; 
+            color: #666666; 
+            padding: 25px; 
+            margin: 25px 0; 
+            border-top: 2px solid #f0f0f0;
+            background: linear-gradient(135deg, #fefefe 0%, #fafafa 100%);
+            border-radius: 12px;
+        }}
+        
+        .signature {{ 
+            border-top: 3px solid #F9A826; 
+            padding: 35px; 
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            display: flex; 
+            align-items: center; 
+            gap: 20px;
+            position: relative;
+        }}
+        
+        .signature::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #F9A826 0%, #EC9A21 50%, #D98C1E 100%);
+        }}
+        
+        .sig-name {{ 
+            font-size: 20px; 
+            font-weight: 600; 
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #F9A826 0%, #EC9A21 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }}
+        
+        .sig-contact {{ 
+            font-size: 14px; 
+            color: #666666; 
+            line-height: 1.6;
+        }}
+        
+        .footer {{ 
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white; 
+            text-align: center; 
+            padding: 25px; 
+            font-size: 13px;
+            position: relative;
+        }}
+        
+        .footer::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #F9A826 0%, #EC9A21 50%, #D98C1E 100%);
+        }}
+        
+        /* Responsive design */
+        @media (max-width: 600px) {{ 
+            .content, .signature {{ 
+                padding: 25px 20px !important; 
+            }} 
+            .signature {{ 
+                flex-direction: column; 
+                text-align: center; 
+            }}
+            .header {{
+                padding: 30px 20px;
+            }}
+            .header h1 {{
+                font-size: 24px;
+            }}
+        }}
+        
+        /* Apollo-specific enhancements */
+        .apollo-glow {{
+            box-shadow: 0 0 20px rgba(249, 168, 38, 0.3);
+        }}
+        
+        .apollo-text-gradient {{
+            background: linear-gradient(135deg, #F9A826 0%, #EC9A21 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             {logo_image}
-            <h1>{titulo}</h1>
         </div>
         <div class="content">{conteudo}</div>
         <div class="signature">
             <div>{icon_image}</div>
             <div>
                 <div class="sig-name">{nome_remetente}</div>
-                <div style="font-size: 14px; color: #6c757d; margin: 5px 0;">Consultor de Inteligência Artificial</div>
+                <div style="font-size: 15px; color: #F9A826; margin: 8px 0; font-weight: 500;">Consultor de Inteligência Artificial</div>
                 <div class="sig-contact">
                     📧 {email_remetente}<br>
                     📱 (11) 96168-5315<br>
@@ -65,16 +219,9 @@ class EmailTemplateGenerator:
         
         <p>O <strong>{metodo_ensino}</strong> entrega uma base sólida de conteúdo, mas o que realmente transforma a sala de aula é o que acontece entre as linhas — no vínculo com o aluno.</p>
         
-        <div class="highlight">
-            <h2 style="margin: 0 0 15px 0;">💝 Presença Afetiva no Ensino</h2>
-            <p style="margin: 0;">Temos observado um movimento bonito em escolas que estão resgatando essa presença afetiva no ensino.</p>
-        </div>
+        <p>Temos observado um movimento bonito em escolas que estão resgatando a presença afetiva no ensino. Nosso trabalho nasce justamente desse sonho: <strong>fortalecer essa ponte entre professor e aluno</strong>.</p>
         
-        <p>Nosso trabalho nasce justamente desse sonho: <strong>fortalecer essa ponte entre professor e aluno</strong>.</p>
-        
-        <div class="cta">
-            <p style="margin: 0 0 15px 0;">Será que essa conversa também faz sentido por aí?</p>
-        </div>
+        <p>Será que essa conversa também faz sentido por aí?</p>
         
         <div class="quote">
             "A educação não é preparação para a vida; a educação é a própria vida."<br><strong>— John Dewey</strong>
@@ -88,16 +235,9 @@ class EmailTemplateGenerator:
         
         <p>Sabemos como a <strong>{nome_escola}</strong> se dedica à excelência — o <strong>{metodologia}</strong> já é um passo firme nessa direção.</p>
         
-        <div class="highlight">
-            <h2 style="margin: 0 0 15px 0;">🚀 Próximo Salto da Educação</h2>
-            <p style="margin: 0;">Mas e se os professores conseguissem atingir os alunos de forma ainda mais direta, emocional e transformadora?</p>
-        </div>
+        <p>Mas e se os professores conseguissem atingir os alunos de forma ainda mais direta, emocional e transformadora? A gente acredita que o próximo salto da educação está na <strong>conexão, não só na instrução</strong>.</p>
         
-        <p>A gente acredita que o próximo salto da educação está na <strong>conexão, não só na instrução</strong>.</p>
-        
-        <div class="cta">
-            <p style="margin: 0 0 15px 0;">Estamos aqui pra caminhar junto nessa visão.</p>
-        </div>
+        <p>Estamos aqui pra caminhar junto nessa visão.</p>
         
         <div class="quote">
             "O professor medíocre conta. O bom professor explica. O professor superior demonstra. O grande professor inspira."<br><strong>— William Arthur Ward</strong>
@@ -111,16 +251,9 @@ class EmailTemplateGenerator:
         
         <p>Algumas escolas seguem o currículo à risca, mas outras deixam marcas que os alunos levam pra vida inteira.</p>
         
-        <div class="highlight">
-            <h2 style="margin: 0 0 15px 0;">⭐ Escolas que Marcam Gerações</h2>
-            <p style="margin: 0;">A <strong>{nome_escola}</strong> já é uma referência — e talvez esteja na hora de fortalecer ainda mais esse diferencial.</p>
-        </div>
+        <p>A <strong>{nome_escola}</strong> já é uma referência — e talvez esteja na hora de fortalecer ainda mais esse diferencial. Hoje, quem se destaca não é só quem ensina mais, mas quem cria <strong>relações mais fortes</strong>.</p>
         
-        <p>Hoje, quem se destaca não é só quem ensina mais, mas quem cria <strong>relações mais fortes</strong>.</p>
-        
-        <div class="cta">
-            <p style="margin: 0 0 15px 0;">Será que conseguimos sonhar esse próximo passo juntos?</p>
-        </div>
+        <p>Será que conseguimos sonhar esse próximo passo juntos?</p>
         
         <div class="quote">
             "A educação é o passaporte para o futuro, pois o amanhã pertence àqueles que se preparam para ele hoje."<br><strong>— Malcolm X</strong>
@@ -134,16 +267,9 @@ class EmailTemplateGenerator:
         
         <p>Mesmo com um sistema robusto como o <strong>{metodologia}</strong>, a gente sabe que às vezes o aluno se desconecta — e o professor sente isso.</p>
         
-        <div class="highlight">
-            <h2 style="margin: 0 0 15px 0;">🛡️ Protegendo o Vínculo Essencial</h2>
-            <p style="margin: 0;">Essa distância silenciosa, quando cresce, cobra um preço alto no engajamento e nos resultados.</p>
-        </div>
+        <p>Essa distância silenciosa, quando cresce, cobra um preço alto no engajamento e nos resultados. A gente acredita que dá pra evitar esse afastamento com <strong>gestos pequenos, mas consistentes</strong>.</p>
         
-        <p>A gente acredita que dá pra evitar esse afastamento com <strong>gestos pequenos, mas consistentes</strong>.</p>
-        
-        <div class="cta">
-            <p style="margin: 0 0 15px 0;">Talvez possamos conversar sobre como proteger esse vínculo tão essencial.</p>
-        </div>
+        <p>Talvez possamos conversar sobre como proteger esse vínculo tão essencial.</p>
         
         <div class="quote">
             "O relacionamento é a base de todo aprendizado significativo."<br><strong>— Rita Pierson</strong>
