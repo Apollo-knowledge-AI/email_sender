@@ -5,20 +5,9 @@ import os
 
 class EmailTemplateGenerator:
     def __init__(self):
-        # Gerar tags <img> com imagens em base64
-        self.logo_image = self.get_image_tag('image/logomarca.png', 'Logo Apollo', 100)
-        self.icon_image = self.get_image_tag('image/icon.png', 'Ícone Assinatura', 60)
-
-    def get_image_tag(self, image_path, alt="", max_height=60):
-        """Retorna uma tag <img> com a imagem em base64 embutida, usando caminho absoluto"""
-        try:
-            abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', image_path))
-            with open(abs_path, "rb") as img_file:
-                b64_data = base64.b64encode(img_file.read()).decode("utf-8")
-                print(b64_data[:200])
-            return f'<img src="data:image/png;base64,{b64_data}" alt="{alt}" style="max-height:{max_height}px;">'
-        except Exception as e:
-            return f'<span style="color:red">[Erro ao carregar imagem: {alt}]</span>'
+        # Tags HTML das imagens com URLs diretas do GitHub
+        self.logo_image = '<img src="https://raw.githubusercontent.com/Apollo-knowledge-AI/email_sender/1cbcc0d1ae1f77da99910134784a391d72de893a/image/logomarca.png" alt="Apollo AI Logo" style="max-width: 250px; height: auto; border-radius: 8px;">'
+        self.icon_image = '<img src="https://raw.githubusercontent.com/Apollo-knowledge-AI/email_sender/1cbcc0d1ae1f77da99910134784a391d72de893a/image/icon.png" alt="Apollo AI Icon" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">'
 
     def get_base_template(self):
         """Template HTML base responsivo"""
@@ -109,9 +98,20 @@ class EmailTemplateGenerator:
             padding: 35px; 
             background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
             display: flex; 
-            align-items: center; 
-            gap: 20px;
+            align-items: flex-start; 
+            gap: 25px;
             position: relative;
+            justify-content: flex-start;
+        }}
+        
+        .signature-icon {{
+            flex-shrink: 0;
+            margin-top: 5px;
+        }}
+        
+        .signature-content {{
+            flex: 1;
+            text-align: left;
         }}
         
         .signature::before {{
@@ -165,8 +165,15 @@ class EmailTemplateGenerator:
                 padding: 25px 20px !important; 
             }} 
             .signature {{ 
-                flex-direction: column; 
-                text-align: center; 
+                flex-direction: row; 
+                gap: 15px;
+                align-items: flex-start;
+            }}
+            .signature-icon {{
+                margin-top: 0;
+            }}
+            .signature-content {{
+                text-align: left;
             }}
             .header {{
                 padding: 30px 20px;
@@ -196,8 +203,8 @@ class EmailTemplateGenerator:
         </div>
         <div class="content">{conteudo}</div>
         <div class="signature">
-            <div>{icon_image}</div>
-            <div>
+            <div class="signature-icon">{icon_image}</div>
+            <div class="signature-content">
                 <div class="sig-name">{nome_remetente}</div>
                 <div style="font-size: 15px; color: #F9A826; margin: 8px 0; font-weight: 500;">Consultor de Inteligência Artificial</div>
                 <div class="sig-contact">
