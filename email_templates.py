@@ -4,10 +4,10 @@ from datetime import datetime
 class EmailTemplateGenerator:
     def __init__(self):
         # SVG do logo Apollo
-        self.logo_image = '''placeholder'''
+        self.logo_image = 'image/logomarca.png'
         
         # SVG do ícone para assinatura
-        self.icon_image = '''placeholder'''
+        self.icon_image = 'image/icon.png'
 
     def get_base_template(self):
         """Template HTML base responsivo"""
