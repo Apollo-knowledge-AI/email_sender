@@ -1,0 +1,17 @@
+# Credenciais do Apollo AI Email Sender
+# Arquivo de exemplo - Copie este arquivo para .env e preencha suas credenciais
+
+NAME=Seu Nome Completo
+EMAIL=seu_email@gmail.com
+PASSWORD=sua_senha_de_app
+
+# Configurações adicionais
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+
+# ⚠️ IMPORTANTE:
+# 1. Renomeie este arquivo para .env
+# 2. Substitua os valores pelas suas credenciais reais
+# 3. Para Gmail, use uma "Senha de App" em vez da senha normal
+# 4. Nunca compartilhe o arquivo .env
+# 5. O arquivo .env já está no .gitignore para não ser commitado 
