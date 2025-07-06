@@ -12,6 +12,68 @@ from email.mime.multipart import MIMEMultipart
 class EmailSenderLogic:
     def __init__(self, gui):
         self.gui = gui
+        
+        # Configurações SMTP para diferentes provedores
+        self.smtp_configs = {
+            'gmail': {
+                'server': 'smtp.gmail.com',
+                'port': 587,
+                'ssl': False,
+                'tls': True,
+                'name': 'Gmail'
+            },
+            'apolloai': {
+                'server': 'smtpout.secureserver.net',
+                'port': 465,
+                'ssl': True,
+                'tls': False,
+                'name': 'Apollo AI (GoDaddy)'
+            },
+            'godaddy': {
+                'server': 'smtpout.secureserver.net',
+                'port': 465,
+                'ssl': True,
+                'tls': False,
+                'name': 'GoDaddy'
+            },
+            'outlook': {
+                'server': 'smtp-mail.outlook.com',
+                'port': 587,
+                'ssl': False,
+                'tls': True,
+                'name': 'Outlook'
+            },
+            'yahoo': {
+                'server': 'smtp.mail.yahoo.com',
+                'port': 587,
+                'ssl': False,
+                'tls': True,
+                'name': 'Yahoo'
+            }
+        }
+    
+    def detect_email_provider(self, email):
+        """Detecta o provedor de email baseado no domínio"""
+        email_lower = email.lower()
+        
+        if '@gmail.com' in email_lower:
+            return 'gmail'
+        elif '@outlook.com' in email_lower or '@hotmail.com' in email_lower or '@live.com' in email_lower:
+            return 'outlook'
+        elif '@yahoo.com' in email_lower:
+            return 'yahoo'
+        elif '@apolloai.com.br' in email_lower:
+            return 'apolloai'
+        elif '.com.br' in email_lower or '.net.br' in email_lower or '.org.br' in email_lower:
+            return 'godaddy'
+        else:
+            # Para domínios personalizados, assumir GoDaddy como padrão
+            return 'godaddy'
+    
+    def get_smtp_config(self, email):
+        """Obtém configuração SMTP baseada no email"""
+        provider = self.detect_email_provider(email)
+        return self.smtp_configs.get(provider, self.smtp_configs['godaddy'])
     
     def get_preview_text(self, sender_name, school_name, metodo_ensino, metodologia):
         """Gera texto de preview simplificado"""
@@ -36,7 +98,7 @@ entre professor e aluno.
 Será que essa conversa também faz sentido por aí?
 
 {sender_name}
-Consultor Educacional - Apollo AI
+Founder - Apollo AI
             """
         elif template == "template2":
             return f"""
@@ -57,7 +119,7 @@ não só na instrução.
 Estamos aqui pra caminhar junto nessa visão.
 
 {sender_name}
-Consultor Educacional - Apollo AI
+Founder - Apollo AI
             """
         elif template == "template3":
             return f"""
@@ -78,7 +140,7 @@ relações mais fortes.
 Será que conseguimos sonhar esse próximo passo juntos?
 
 {sender_name}
-Consultor Educacional - Apollo AI
+Founder - Apollo AI
             """
         else:  # template4
             return f"""
@@ -99,7 +161,7 @@ pequenos, mas consistentes.
 Talvez possamos conversar sobre como proteger esse vínculo tão essencial.
 
 {sender_name}
-Consultor Educacional - Apollo AI
+Founder - Apollo AI
             """
     
     def update_preview(self):
@@ -118,9 +180,9 @@ Consultor Educacional - Apollo AI
     
     def preview_in_browser(self):
         """Abre preview completo no navegador"""
-        sender_name = self.gui.sender_name_entry.get().strip() or "Consultor Apollo"
+        sender_name = self.gui.sender_name_entry.get().strip() or "Founder Apollo"
         school_name = self.gui.school_name_entry.get().strip() or "Escola Exemplo"
-        sender_email = self.gui.sender_email_entry.get().strip() or "consultor@apolloeducacional.com"
+        sender_email = self.gui.sender_email_entry.get().strip() or "founder@apolloai.com.br"
         metodo_ensino = self.gui.metodo_ensino_entry.get().strip() or "Método Tradicional"
         metodologia = self.gui.metodologia_entry.get().strip() or "Metodologia Ativa"
         
@@ -170,6 +232,9 @@ Consultor Educacional - Apollo AI
             return
         
         try:
+            # Detectar configuração SMTP automaticamente
+            smtp_config = self.get_smtp_config(sender_email)
+            
             # Obter método e metodologia
             metodo_ensino = self.gui.metodo_ensino_entry.get().strip() or "Método Tradicional"
             metodologia = self.gui.metodologia_entry.get().strip() or "Metodologia Ativa"
@@ -201,9 +266,15 @@ Consultor Educacional - Apollo AI
             html_part = MIMEText(html_body, 'html', 'utf-8')
             msg.attach(html_part)
             
-            # Configurar SMTP
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
+            # Configurar SMTP com base no provedor detectado
+            if smtp_config['ssl']:
+                server = smtplib.SMTP_SSL(smtp_config['server'], smtp_config['port'])
+            else:
+                server = smtplib.SMTP(smtp_config['server'], smtp_config['port'])
+                
+            if smtp_config['tls']:
+                server.starttls()
+            
             server.login(sender_email, sender_password)
             
             # Enviar
@@ -219,19 +290,30 @@ Consultor Educacional - Apollo AI
             }
             
             template_display = template_names.get(self.gui.template_var.get(), "Template Personalizado")
+            provider_name = smtp_config['name']
             
             messagebox.showinfo("✅ Sucesso!", 
                                f"Email enviado com sucesso para {school_name}!\n\n"
+                               f"Provedor: {provider_name}\n"
                                f"Template: {template_display}\n"
                                f"Destinatário: {school_email}")
             
         except smtplib.SMTPAuthenticationError:
-            messagebox.showerror("❌ Erro de Autenticação", 
-                               "Falha na autenticação do email.\n\n"
-                               "💡 Dica para Gmail:\n"
-                               "• Use uma 'Senha de App' em vez da senha normal\n"
-                               "• Ative a autenticação de 2 fatores\n"
-                               "• Acesse: Conta Google > Segurança > Senhas de app")
+            provider = self.detect_email_provider(sender_email)
+            error_msg = "Falha na autenticação do email.\n\n"
+            
+            if provider == 'gmail':
+                error_msg += "💡 Dica para Gmail:\n• Use uma 'Senha de App' em vez da senha normal\n• Ative a autenticação de 2 fatores\n• Acesse: Conta Google > Segurança > Senhas de app"
+            elif provider == 'apolloai':
+                error_msg += "💡 Dica para Apollo AI (@apolloai.com.br):\n• Verifique se o email e senha estão corretos\n• Use sua senha normal do email\n• Certifique-se de que o email está ativo no GoDaddy\n• Servidor: smtpout.secureserver.net:465 (SSL)"
+            elif provider == 'godaddy':
+                error_msg += "💡 Dica para GoDaddy:\n• Verifique se o email e senha estão corretos\n• Use sua senha normal do email\n• Certifique-se de que o email está ativo"
+            elif provider == 'outlook':
+                error_msg += "💡 Dica para Outlook:\n• Verifique se o email e senha estão corretos\n• Pode ser necessário ativar 'Aplicativos menos seguros'"
+            else:
+                error_msg += "💡 Verifique suas credenciais de email"
+                
+            messagebox.showerror("❌ Erro de Autenticação", error_msg)
         except smtplib.SMTPException as e:
             messagebox.showerror("❌ Erro SMTP", f"Erro ao enviar email:\n{str(e)}")
         except Exception as e:
@@ -248,6 +330,9 @@ Consultor Educacional - Apollo AI
             return
         
         try:
+            # Detectar configuração SMTP baseada no email
+            smtp_config = self.get_smtp_config(email)
+            
             # Criar conteúdo do arquivo .env
             env_content = f"""# Credenciais do Apollo AI Email Sender
 # Arquivo gerado automaticamente - Não compartilhe este arquivo!
@@ -256,9 +341,12 @@ NAME={name}
 EMAIL={email}
 PASSWORD={password}
 
-# Configurações adicionais
-SMTP_SERVER=smtp.gmail.com
-SMTP_PORT=587
+# Configurações SMTP - Detectadas automaticamente
+SMTP_SERVER={smtp_config['server']}
+SMTP_PORT={smtp_config['port']}
+SMTP_SSL={smtp_config['ssl']}
+SMTP_TLS={smtp_config['tls']}
+PROVIDER={smtp_config['name']}
 """
             
             # Salvar arquivo .env
@@ -269,6 +357,8 @@ SMTP_PORT=587
                                f"Credenciais salvas com sucesso!\n\n"
                                f"Nome: {name}\n"
                                f"Email: {email}\n"
+                               f"Provedor: {smtp_config['name']}\n"
+                               f"Servidor: {smtp_config['server']}:{smtp_config['port']}\n"
                                f"Arquivo: .env\n\n"
                                f"⚠️ Importante: Mantenha este arquivo seguro e não o compartilhe!")
             

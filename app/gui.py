@@ -1,13 +1,6 @@
 # gui.py
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
-import webbrowser
-import tempfile
-import os
-import re
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from tkinter import ttk, scrolledtext
 
 from .base_email import EmailTemplateGenerator
 from .templates import EmailSenderLogic

@@ -2,16 +2,27 @@
 # Arquivo de exemplo - Copie este arquivo para .env e preencha suas credenciais
 
 NAME=Seu Nome Completo
-EMAIL=seu_email@gmail.com
-PASSWORD=sua_senha_de_app
+EMAIL=seu_email@apolloai.com.br
+PASSWORD=sua_senha_do_email
 
-# Configurações adicionais
-SMTP_SERVER=smtp.gmail.com
-SMTP_PORT=587
+# Configurações SMTP - Detectadas automaticamente pelo sistema
+SMTP_SERVER=smtpout.secureserver.net
+SMTP_PORT=465
+SMTP_SSL=True
+SMTP_TLS=False
+PROVIDER=Apollo AI (GoDaddy)
 
 # ⚠️ IMPORTANTE:
 # 1. Renomeie este arquivo para .env
 # 2. Substitua os valores pelas suas credenciais reais
-# 3. Para Gmail, use uma "Senha de App" em vez da senha normal
-# 4. Nunca compartilhe o arquivo .env
-# 5. O arquivo .env já está no .gitignore para não ser commitado 
+# 3. Para @apolloai.com.br: Use sua senha normal do email
+# 4. Para Gmail: Use uma "Senha de App" em vez da senha normal
+# 5. Nunca compartilhe o arquivo .env
+# 6. O arquivo .env já está no .gitignore para não ser commitado
+
+# 🚀 CONFIGURAÇÕES AUTOMÁTICAS:
+# O sistema detecta automaticamente as configurações SMTP baseado no seu email:
+# - @apolloai.com.br → Apollo AI (GoDaddy): smtpout.secureserver.net:465 (SSL)
+# - @gmail.com → Gmail: smtp.gmail.com:587 (TLS)
+# - @outlook.com → Outlook: smtp-mail.outlook.com:587 (TLS)
+# - Outros domínios .com.br → GoDaddy: smtpout.secureserver.net:465 (SSL) 

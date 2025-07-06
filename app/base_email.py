@@ -206,7 +206,7 @@ class EmailTemplateGenerator:
             <div class="signature-icon">{icon_image}</div>
             <div class="signature-content">
                 <div class="sig-name">{nome_remetente}</div>
-                <div style="font-size: 15px; color: #F9A826; margin: 8px 0; font-weight: 500;">Consultor</div>
+                <div style="font-size: 15px; color: #F9A826; margin: 8px 0; font-weight: 500;">Founder</div>
                 <div class="sig-contact">
                     📧 {email_remetente}<br>
                     📱 (11) 95101-7666<br>
