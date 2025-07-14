@@ -6,8 +6,8 @@ import os
 class EmailTemplateGenerator:
     def __init__(self):
         # Tags HTML das imagens com URLs diretas do GitHub
-        self.logo_image = '<img src="https://raw.githubusercontent.com/Apollo-knowledge-AI/email_sender/1cbcc0d1ae1f77da99910134784a391d72de893a/image/logomarca.png" alt="Apollo AI Logo" style="max-width: 250px; height: auto; border-radius: 8px;">'
-        self.icon_image = '<img src="https://raw.githubusercontent.com/Apollo-knowledge-AI/email_sender/1cbcc0d1ae1f77da99910134784a391d72de893a/image/icon.png" alt="Apollo AI Icon" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">'
+        self.logo_image = '<img src="https://github.com/Apollo-knowledge-AI/icons/blob/main/logomarca_nerd-o_branco.png?raw=true" alt="Apollo AI Logo" style="max-width: 250px; height: auto; border-radius: 8px;">'
+        self.icon_image = '<img src="https://github.com/Apollo-knowledge-AI/icons/blob/main/logo_nerd-o.png?raw=true" alt="Apollo AI Icon" style="width: 50px; height: 50px; border-radius: 8px; object-fit: contain;">'
 
     def get_base_template(self):
         """Template HTML base responsivo"""
@@ -16,9 +16,12 @@ class EmailTemplateGenerator:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {{ 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             margin: 0; 
             padding: 0; 
             background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
@@ -210,11 +213,11 @@ class EmailTemplateGenerator:
                 <div class="sig-contact">
                     📧 {email_remetente}<br>
                     📱 (11) 95101-7666<br>
-                    🌐 https://apolloai.com.br
+                    🌐 <a href="https://www.nerd-o.com.br" target="_blank" style="color: #F9A826; text-decoration: none;">www.nerd-o.com.br</a>
                 </div>
             </div>
         </div>
-        <div class="footer">© {ano} Apollo AI - Transformando Educação</div>
+        <div class="footer">© {ano} Nerd-o - Transformando Educação</div>
     </div>
 </body>
 </html>'''
