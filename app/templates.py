@@ -22,6 +22,13 @@ class EmailSenderLogic:
                 'tls': True,
                 'name': 'Gmail'
             },
+            'nerd-o': {
+                'server': 'smtp.gmail.com',
+                'port': 587,
+                'ssl': False,
+                'tls': True,
+                'name': 'Nerd-o (Google Workspace)'
+            },
             'apolloai': {
                 'server': 'smtpout.secureserver.net',
                 'port': 465,
@@ -62,6 +69,8 @@ class EmailSenderLogic:
             return 'outlook'
         elif '@yahoo.com' in email_lower:
             return 'yahoo'
+        elif '@nerd-o.com' in email_lower:
+            return 'nerd-o'
         elif '@apolloai.com.br' in email_lower:
             return 'apolloai'
         elif '.com.br' in email_lower or '.net.br' in email_lower or '.org.br' in email_lower:
@@ -180,9 +189,9 @@ Founder - Apollo AI
     
     def preview_in_browser(self):
         """Abre preview completo no navegador"""
-        sender_name = self.gui.sender_name_entry.get().strip() or "Founder Apollo"
+        sender_name = self.gui.sender_name_entry.get().strip() or "Founder Nerd-o"
         school_name = self.gui.school_name_entry.get().strip() or "Escola Exemplo"
-        sender_email = self.gui.sender_email_entry.get().strip() or "founder@apolloai.com.br"
+        sender_email = self.gui.sender_email_entry.get().strip() or "founder@nerd-o.com"
         metodo_ensino = self.gui.metodo_ensino_entry.get().strip() or "Método Tradicional"
         metodologia = self.gui.metodologia_entry.get().strip() or "Metodologia Ativa"
         
@@ -304,8 +313,15 @@ Founder - Apollo AI
             
             if provider == 'gmail':
                 error_msg += "💡 Dica para Gmail:\n• Use uma 'Senha de App' em vez da senha normal\n• Ative a autenticação de 2 fatores\n• Acesse: Conta Google > Segurança > Senhas de app"
-            elif provider == 'apolloai':
-                error_msg += "💡 Dica para Apollo AI (@apolloai.com.br):\n• Verifique se o email e senha estão corretos\n• Use sua senha normal do email\n• Certifique-se de que o email está ativo no GoDaddy\n• Servidor: smtpout.secureserver.net:465 (SSL)"
+            elif provider == 'nerd-o':
+                error_msg += (
+                    "💡 Dica para Nerd-o (@nerd-o.com via Google Workspace):\n"
+                    "• Verifique se o email e a senha estão corretos\n"
+                    "• Use uma 'Senha de App' (não a senha normal)\n"
+                    "• Ative a autenticação em dois fatores na sua conta Google\n"
+                    "• Siga: Conta Google > Segurança > Senhas de app\n"
+                    "• Servidor: smtp.gmail.com:587 (TLS)"
+                )
             elif provider == 'godaddy':
                 error_msg += "💡 Dica para GoDaddy:\n• Verifique se o email e senha estão corretos\n• Use sua senha normal do email\n• Certifique-se de que o email está ativo"
             elif provider == 'outlook':
@@ -334,7 +350,7 @@ Founder - Apollo AI
             smtp_config = self.get_smtp_config(email)
             
             # Criar conteúdo do arquivo .env
-            env_content = f"""# Credenciais do Apollo AI Email Sender
+            env_content = f"""# Credenciais do Nerd-o Email Sender
 # Arquivo gerado automaticamente - Não compartilhe este arquivo!
 
 NAME={name}

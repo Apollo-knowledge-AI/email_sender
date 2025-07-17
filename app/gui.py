@@ -14,7 +14,7 @@ class EmailSenderGUI:
         
     def setup_window(self):
         """Configura a janela principal"""
-        self.root.title("Sistema de Envio de Emails - Apollo AI")
+        self.root.title("Sistema de Envio de Emails - Nerd-o AI")
         self.root.configure(bg='#f0f0f0')
         
         # Configurar tamanho da janela
@@ -62,7 +62,7 @@ class EmailSenderGUI:
         title_frame = tk.Frame(self.root, bg='#f0f0f0')
         title_frame.pack(pady=20)
         
-        title_label = tk.Label(title_frame, text="📧 Apollo AI - Sistema de Emails", 
+        title_label = tk.Label(title_frame, text="📧 Nerd-o - Sistema de Emails", 
                               font=('Arial', 18, 'bold'), bg='#f0f0f0', fg='#2c3e50')
         title_label.pack()
         
