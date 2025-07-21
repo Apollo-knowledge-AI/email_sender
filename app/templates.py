@@ -8,6 +8,7 @@ import re
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
 
 class EmailSenderLogic:
     def __init__(self, gui):
@@ -220,7 +221,7 @@ Founder - Apollo AI
         return re.match(pattern, email) is not None
     
     def send_email(self):
-        """Envia o email com template HTML"""
+        """Envia o email com template HTML e imagens anexadas"""
         # Validar campos
         sender_name = self.gui.sender_name_entry.get().strip()
         sender_email = self.gui.sender_email_entry.get().strip()
@@ -253,8 +254,8 @@ Founder - Apollo AI
                 self.gui.template_var.get(), sender_name, school_name, sender_email, metodo_ensino, metodologia
             )
             
-            # Criar mensagem
-            msg = MIMEMultipart('alternative')
+            # Criar mensagem principal
+            msg = MIMEMultipart('related')
             msg['From'] = sender_email
             msg['To'] = school_email
             
@@ -271,9 +272,43 @@ Founder - Apollo AI
             else:
                 msg['Subject'] = f"Proposta Educacional para {school_name}"
             
+            # Criar container alternativo para HTML
+            msg_alternative = MIMEMultipart('alternative')
+            
             # Anexar HTML
             html_part = MIMEText(html_body, 'html', 'utf-8')
-            msg.attach(html_part)
+            msg_alternative.attach(html_part)
+            
+            # Anexar o container alternativo à mensagem principal
+            msg.attach(msg_alternative)
+            
+            # Anexar imagens locais com Content-ID
+            try:
+                # Anexar logomarca
+                if os.path.exists('logomarca.png'):
+                    with open('logomarca.png', 'rb') as f:
+                        img_data = f.read()
+                    img = MIMEImage(img_data)
+                    img.add_header('Content-ID', '<logomarca>')
+                    img.add_header('Content-Disposition', 'inline', filename='logomarca.png')
+                    msg.attach(img)
+                else:
+                    print("⚠️ Aviso: Arquivo logomarca.png não encontrado")
+                
+                # Anexar ícone
+                if os.path.exists('icon.png'):
+                    with open('icon.png', 'rb') as f:
+                        img_data = f.read()
+                    img = MIMEImage(img_data)
+                    img.add_header('Content-ID', '<icon>')
+                    img.add_header('Content-Disposition', 'inline', filename='icon.png')
+                    msg.attach(img)
+                else:
+                    print("⚠️ Aviso: Arquivo icon.png não encontrado")
+                    
+            except Exception as img_error:
+                print(f"⚠️ Erro ao anexar imagens: {img_error}")
+                # Continua o envio mesmo se houver erro com as imagens
             
             # Configurar SMTP com base no provedor detectado
             if smtp_config['ssl']:
@@ -303,6 +338,7 @@ Founder - Apollo AI
             
             messagebox.showinfo("✅ Sucesso!", 
                                f"Email enviado com sucesso para {school_name}!\n\n"
+                               f"📧 Imagens anexadas: Logomarca + Ícone\n"
                                f"Provedor: {provider_name}\n"
                                f"Template: {template_display}\n"
                                f"Destinatário: {school_email}")
