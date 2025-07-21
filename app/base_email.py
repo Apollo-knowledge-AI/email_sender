@@ -5,9 +5,9 @@ import os
 
 class EmailTemplateGenerator:
     def __init__(self):
-        # Tags HTML das imagens com URLs diretas do GitHub
-        self.logo_image = '<img src="https://github.com/Apollo-knowledge-AI/icons/blob/main/logomarca_nerd-o_branco.png?raw=true" alt="Apollo AI Logo" style="max-width: 250px; height: auto; border-radius: 8px;">'
-        self.icon_image = '<img src="https://github.com/Apollo-knowledge-AI/icons/blob/main/logo_nerd-o.png?raw=true" alt="Apollo AI Icon" style="width: 50px; height: 50px; border-radius: 8px; object-fit: contain;">'
+        # Tags HTML das imagens usando Content-ID (CID) para anexos do email
+        self.logo_image = '<img src="cid:logomarca" alt="Nerd-o Logo" style="max-width: 250px; height: auto; border-radius: 8px;">'
+        self.icon_image = '<img src="cid:icon" alt="Nerd-o Icon" style="width: 50px; height: 50px; border-radius: 8px; object-fit: contain;">'
 
     def get_base_template(self):
         """Template HTML base responsivo"""
